@@ -3,6 +3,7 @@ from collections import namedtuple, OrderedDict
 import vm_plots
 from rule_time import Rule_Time
 from rule_start import Rule_Start
+from rule_distance import Rule_Distance
 
 # volcanic mine modelling
 Direction = namedtuple("Direction", "up down")(*[1, -1])
@@ -15,7 +16,7 @@ DEFAULT_VENT_UPDATE = 2
 SWEET_SPOT_RANGE = [41, 59]
 
 # change these into variables later
-START_A = 30
+START_A = 50
 START_B = 40
 START_C = 50
 START_DIR_A = Direction.down
@@ -66,8 +67,9 @@ def get_stability_change(a, b, c):
 
 def get_rules():
     return [
-    Rule_Time("Discord Fix A", "A", 30, 240, True),
-    Rule_Start("Discord Fix A at start", "A", 20),
+    Rule_Distance("Hey Jase Safe Rule", "A", 25, 60),
+    # Rule_Time("Discord Fix A", "A", 30, 240, True),
+    # Rule_Start("Discord Fix A at start", "A", 40),
     Rule_Start("Discord Fix B at start", "B", 20),
     ]
 
@@ -155,4 +157,4 @@ if __name__ == "__main__":
             fh.write("{}\n".format(",".join([str(a) for a in vals])))
 
     # vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix")
-    vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix", filename="mingtest.png")
+    vm_plots.plot_vm(results, plot_title="A=50down, B=40down, C=50down, nofix", filename="mingtest.png")

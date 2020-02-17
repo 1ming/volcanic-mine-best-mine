@@ -1,15 +1,14 @@
 from rules import Rule
 from consts import RUN_TIME
-# Rule to fix a vent within a certain time window
-class Rule_Time(Rule):
-    def __init__(self, name, vent, start_time, end_time, only_falling_stability):
-        super(Rule_Time, self).__init__(name)
-        # Minimum/maximum times for the rule to take effect
+# Rule to fix a vent when its value is a certain distance away from 50
+class Rule_Distance(Rule):
+    def __init__(self, name, vent, threshold, start_time):
+        super(Rule_Distance, self).__init__(name)
+        # Minimum time for the rule to take effect
+        # Mostly needed so that the rule isn't triggered before the initial fix is done.
         self.start_time = start_time
-        self.end_time = end_time
         
-        # Should this rule be done only if stability is falling?
-        self.only_falling_stability = only_falling_stability
+        self.threshold = threshold
         
         self.start_timestamps = []
         self.end_timestamps = []
@@ -23,12 +22,11 @@ class Rule_Time(Rule):
             # Check if we've finally reached the vent.
             return data["time"] >= self.start_doing + RUN_TIME[self.vent]
         # Not running to a vent, check if the time is within bounds.
-        if data["time"] > self.end_time or data["time"] < self.start_time:
+        if data["time"] < self.start_time:
             return False
-        # Rule still being followed, check if stability is falling if we care.
-        if self.only_falling_stability and data["stability_change"] >= 0:
-            return False
-        return True
+        # Check if the vent is far enough from 50.
+        vent = data["vents"][self.vent]
+        return abs(vent.val - 50) > self.threshold
         
     def do_action(self, data):
         # If we aren't running to the vent, start running
