@@ -10,7 +10,7 @@ def plot_vm(results, show=True, filename=None, plot_title=None):
     fig, axs = plt.subplots(2, 1)
 
     # plot the vents
-    for vent_name in ["a", "b", "c"]:
+    for vent_name in ["A", "B", "C"]:
         vent_data = results[vent_name]
         axs[0].plot(t, vent_data, label=vent_name)
         # axs[0].plot(t, vent_data, marker='.', label=vent_name)  # if we want to change the marker type

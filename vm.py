@@ -59,51 +59,60 @@ class Vent():
     def check_in_ss(self):
         return (SWEET_SPOT_RANGE[0] <= self.val <= SWEET_SPOT_RANGE[1])
 
-def update_stability(a, b, c):
+def get_stability_change(a, b, c):
     return 25 - (abs(a - 50) + abs(b-50) + abs(c-50))/3
 
 
 
 def main():
+    # Create data object.
+    data = {}
     # create vents A, B, C
     vent_a = Vent("A", START_A, START_DIR_A, [])
     vent_b = Vent("B", START_B, START_DIR_B, [vent_a,])
     vent_c = Vent("C", START_C, START_DIR_C, [vent_a, vent_b])
-    vents = [vent_a, vent_b, vent_c]
+    data.vents = {
+	"A": vent_a, 
+	"B": vent_b, 
+	"C": vent_c
+	}
 
     # initialize result datasets for time series plot
     results = OrderedDict([
         ("t", []),
-        ("a", []),
-        ("b", []),
-        ("c", []),
+        ("A", []),
+        ("B", []),
+        ("C", []),
         ("s", []),
     ])
 
-    stability = 50
+	# Initialize stability.
+    data.stability = 50
+    data.stability_change = 0
 
     for i in range(1,TOTAL_TIME):
         # update vent values
         if i % TIME_VENT_UPDATE == 0:
             print("Iteration {}: Updating vent values".format(i))
-            for vent in vents:
+            for vent in data.vents.values():
                 vent.update_val()
 
         # update stability value
         if i % TIME_STAB_UPDATE == 0:
             print("Iteration {}: Updating stability value".format(i))
-            stability += update_stability(*[x.val for x in vents])
+            data.stability_change = get_stability_change(*[x.val for x in data.vents.values()])
+            data.stability += data.stability_change
             # Don't go over cap
-            if stability > 100:
-                stability = 100
-            elif stability < 0:
-                stability = 0
+            if data.stability > 100:
+                data.stability = 100
+            elif data.stability < 0:
+                data.stability = 0
 
         # add dataset to results
-        for (dataset, vent) in zip([results[k] for k in ["a", "b", "c"]], vents):
-            dataset.append(vent.val)
+        for ventName, vent in data.vents:
+            results[ventName].append(vent.val)
         results["t"].append(i)
-        results["s"].append(stability)
+        results["s"].append(data.stability)
 
     return results
 
