@@ -71,7 +71,7 @@ def main():
     vent_a = Vent("A", START_A, START_DIR_A, [])
     vent_b = Vent("B", START_B, START_DIR_B, [vent_a,])
     vent_c = Vent("C", START_C, START_DIR_C, [vent_a, vent_b])
-    data.vents = {
+    data["vents"] = {
 	"A": vent_a, 
 	"B": vent_b, 
 	"C": vent_c
@@ -87,32 +87,32 @@ def main():
     ])
 
 	# Initialize stability.
-    data.stability = 50
-    data.stability_change = 0
+    data["stability"] = 50
+    data["stability_change"] = 0
 
     for i in range(1,TOTAL_TIME):
         # update vent values
         if i % TIME_VENT_UPDATE == 0:
             print("Iteration {}: Updating vent values".format(i))
-            for vent in data.vents.values():
+            for vent in data["vents"].values():
                 vent.update_val()
 
         # update stability value
         if i % TIME_STAB_UPDATE == 0:
             print("Iteration {}: Updating stability value".format(i))
-            data.stability_change = get_stability_change(*[x.val for x in data.vents.values()])
-            data.stability += data.stability_change
+            data["stability_change"] = get_stability_change(*[x.val for x in data["vents"].values()])
+            data["stability"] += data["stability_change"]
             # Don't go over cap
-            if data.stability > 100:
-                data.stability = 100
-            elif data.stability < 0:
-                data.stability = 0
+            if data["stability"] > 100:
+                data["stability"] = 100
+            elif data["stability"] < 0:
+                data["stability"] = 0
 
         # add dataset to results
-        for ventName, vent in data.vents:
+        for ventName, vent in data["vents"].items():
             results[ventName].append(vent.val)
         results["t"].append(i)
-        results["s"].append(data.stability)
+        results["s"].append(data["stability"])
 
     return results
 
