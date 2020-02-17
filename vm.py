@@ -1,6 +1,8 @@
 from collections import namedtuple, OrderedDict
 
 import vm_plots
+from rule_time import Rule_Time
+from rule_start import Rule_Start
 
 # volcanic mine modelling
 Direction = namedtuple("Direction", "up down")(*[1, -1])
@@ -50,7 +52,7 @@ class Vent():
             self.val = 0
 
     # Change direction so that value goes towards 50
-    def fix_dir(self):
+    def fix(self):
         if self.val < 50:
             self.direction = Direction.up
         elif self.val > 50:
@@ -62,6 +64,12 @@ class Vent():
 def get_stability_change(a, b, c):
     return 25 - (abs(a - 50) + abs(b-50) + abs(c-50))/3
 
+def get_rules():
+    return [
+    Rule_Time("Discord Fix A", "A", 30, 240, True),
+    Rule_Start("Discord Fix A at start", "A", 20),
+    Rule_Start("Discord Fix B at start", "B", 20),
+    ]
 
 
 def main():
@@ -72,10 +80,10 @@ def main():
     vent_b = Vent("B", START_B, START_DIR_B, [vent_a,])
     vent_c = Vent("C", START_C, START_DIR_C, [vent_a, vent_b])
     data["vents"] = {
-	"A": vent_a, 
-	"B": vent_b, 
-	"C": vent_c
-	}
+    "A": vent_a, 
+    "B": vent_b, 
+    "C": vent_c
+    }
 
     # initialize result datasets for time series plot
     results = OrderedDict([
@@ -86,11 +94,16 @@ def main():
         ("s", []),
     ])
 
-	# Initialize stability.
+    # Initialize stability.
     data["stability"] = 50
     data["stability_change"] = 0
+    
+    # Get rules
+    rules = get_rules()
 
     for i in range(1,TOTAL_TIME):
+        data["time"] = i;
+        
         # update vent values
         if i % TIME_VENT_UPDATE == 0:
             print("Iteration {}: Updating vent values".format(i))
@@ -107,6 +120,12 @@ def main():
                 data["stability"] = 100
             elif data["stability"] < 0:
                 data["stability"] = 0
+        
+        # Run player action rules.
+        for rule in rules:
+            if rule.check_condition(data):
+                print("Iteration {}: Doing rule action {}".format(i, rule.name))
+                rule.do_action(data)
 
         # add dataset to results
         for ventName, vent in data["vents"].items():
@@ -135,5 +154,5 @@ if __name__ == "__main__":
             vals = [results[k][i] for k in results.keys()]
             fh.write("{}\n".format(",".join([str(a) for a in vals])))
 
-    vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix")
-    # vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix", filename="mingtest.png")
+    # vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix")
+    vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix", filename="mingtest.png")
