@@ -12,7 +12,36 @@ def colour_cycler(colour_list = DEFAULT_COLOURS):
         for colour in colour_list:
             yield colour
 
-def plot_histogram():
+def debug_histogram(dataset, num_bins=20, filename=None):
+    fig, axs = plt.subplots(figsize=(10,6))
+
+    axs.hist(dataset, bins=num_bins)
+
+    if filename is not None:
+        plt.savefig(filename, bbox_inches='tight')
+
+    plt.show()
+
+
+def plot_mc_histograms():
+    np.random.seed(19680801)
+
+    N_points = 100000
+    n_bins = 20
+
+    # Generate a normal distribution, center at x=0 and y=5
+    x = np.random.randn(N_points)
+    y = .4 * x + np.random.randn(100000) + 5
+
+    fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
+
+    # We can set the number of bins with the `bins` kwarg
+    axs[0].hist(x, bins=n_bins)
+    axs[1].hist(y, bins=n_bins)
+
+    plt.show()
+
+def plot_histogram(dataset, num_bins=20, show_percentiles=False):
     pass
 
 def plot_vm(results, events, show=True, filename=None, plot_title=None):

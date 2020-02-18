@@ -1,6 +1,6 @@
 from vm import main, get_rules
 from consts import VALVE_START_RANGE, VentDirection
-from vm_plots import plot_histogram
+from vm_plots import plot_histogram, debug_histogram, plot_vm
 import numpy as np
 import sys
 from collections import OrderedDict
@@ -27,6 +27,12 @@ def get_vent_dir_stats(config_input_samples):
         vent_dir_input_stats[k]["percent_down"] = round(1.0 - vent_dir_input_stats[k]["percent_up"], 2)
     return vent_dir_input_stats
 
+def plot_percentile(percentile, stability_dataset, all_iteration_results, all_iteration_events):
+    index = stability_dataset.index(np.percentile(stability_dataset, percentile, interpolation='nearest'))
+    results = all_iteration_results[index]
+    events = all_iteration_events[index]
+    plot_vm(results, events, plot_title="{}th".format(percentile), filename="results/{}th.png".format(percentile))
+
 def monte_carlo(num_samples=NUM_SAMPLES):
     config_full_dataset = {
         "start_a": _random_valve_start(num_samples),
@@ -47,6 +53,10 @@ def monte_carlo(num_samples=NUM_SAMPLES):
     # set up results (stability value at 5 min  mark)
     stability_dataset = []
 
+    # store full data from every iteration
+    all_iteration_results = []
+    all_iteration_events = []
+
     for i in range(num_samples):
         # generate initial conditions
             # vent A, B, C values, directions
@@ -55,7 +65,7 @@ def monte_carlo(num_samples=NUM_SAMPLES):
 
         # config_dict = {num: num*num for num in range(1, 11)}
         # execute vm
-        (iteration_results, _) = main(config_dict)
+        (iteration_results, iteration_events) = main(config_dict)
 
         # add resulting stability value to dataset
         stability_dataset.append(iteration_results["s"][-1])
@@ -64,6 +74,11 @@ def monte_carlo(num_samples=NUM_SAMPLES):
     print("Rules used:")
     for rule in get_rules():
         print(rule.name)
+
+    # store iteration results to all results so we can plot later if needed
+    all_iteration_results.append(iteration_results)
+    all_iteration_events.append(iteration_events)
+
     # print some statistics of results
     print("")
     print("Stability dataset over {} games:".format(num_samples))
@@ -76,7 +91,12 @@ def monte_carlo(num_samples=NUM_SAMPLES):
     print("75th percentile: {}".format(np.percentile(stability_dataset, 75, interpolation='nearest')))
     print("95th percentile: {}".format(np.percentile(stability_dataset, 95, interpolation='nearest')))
 
+    # get indices of different cases
+    for i in [0, 100]:
+        plot_percentile(i, stability_dataset, all_iteration_results, all_iteration_events)
+
     # plot results
+    debug_histogram(stability_dataset, num_bins=50, filename="results/histogram.png")
 
 if __name__ == "__main__":
     num_samples = NUM_SAMPLES
