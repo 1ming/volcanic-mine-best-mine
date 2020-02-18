@@ -75,12 +75,14 @@ def plot_vm(results, events, show=True, filename=None, plot_title=None):
     axs[0].legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('Vents')
+    axs[0].set_ylim([-5, 105])
     axs[0].grid(True)
 
     # plot the stability time series
     axs[1].plot(t, s, lw=PLOTS_LINE_WIDTH, color=cc.next())
     axs[1].set_xlabel('time')
     axs[1].set_ylabel('Stability')
+    axs[1].set_ylim([-5, 105])
     axs[1].grid(True)
 
     if plot_title is not None:
