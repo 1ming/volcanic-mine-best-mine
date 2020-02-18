@@ -14,8 +14,24 @@ TIME_VENT_UPDATE = 6
 TIME_STAB_UPDATE = 15
 DEFAULT_VENT_UPDATE = 2
 SWEET_SPOT_RANGE = [41, 59]
+VALVE_START_RANGE = [30, 70]
 
 # change these into variables later
+DEFAULT_KWARGS = {
+    "start_a": 50,
+    "start_b": 40,
+    "start_c": 30,
+    "start_dir_a": Direction.down,
+    "start_dir_b": Direction.down,
+    "start_dir_c": Direction.down,
+}
+
+def validate_kwargs(input_config_dict):
+    output_config_dict = input_config_dict
+    # TODO implement validation of config dictionary and output a valid one
+    # warn user if input config was not valid
+    return output_config_dict
+
 START_A = 50
 START_B = 40
 START_C = 50
@@ -74,13 +90,21 @@ def get_rules():
     ]
 
 
-def main():
+def main(config_dict=None):
+    # handle default argument overrides
+    if config_dict is None:
+        config_dict = {}
+    for (k, v) in DEFAULT_KWARGS.iteritems():
+        if config_dict.get(k) is None:
+            config_dict[k] = v
+    config_dict = validate_kwargs(config_dict)
+
     # Create data object.
     data = {}
     # create vents A, B, C
-    vent_a = Vent("A", START_A, START_DIR_A, [])
-    vent_b = Vent("B", START_B, START_DIR_B, [vent_a,])
-    vent_c = Vent("C", START_C, START_DIR_C, [vent_a, vent_b])
+    vent_a = Vent("A", config_dict["start_a"], config_dict["start_dir_a"], [])
+    vent_b = Vent("B", config_dict["start_b"], config_dict["start_dir_b"], [vent_a,])
+    vent_c = Vent("C", config_dict["start_c"], config_dict["start_dir_b"], [vent_a, vent_b])
     data["vents"] = {
     "A": vent_a,
     "B": vent_b,
