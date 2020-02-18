@@ -30,11 +30,12 @@ def get_stability_change(a, b, c):
 
 def get_rules():
     return [
-    Rule_Distance("Vorpal Safe Rule", "A", 15, 60),
-    # Rule_Distance("Hey Jase Safe Rule", "A", 25, 60),
+    # Rule_Distance("Hey Jase Fix When 25 Off", "A", 25, 41),
+    # Rule_Distance("Vorpal Fix When 15 Off", "A", 15, 41),
     # Rule_Time("Discord Fix A", "A", 30, 240, True),
-    # Rule_Start("Discord Fix A at start", "A", 40),
-    Rule_Start("Discord Fix B at start", "B", 20),
+    Rule_Time("Fix A at 8 min mark", "A", 120, 121, False),
+    Rule_Start("Fix A at start", "A", 40),
+    Rule_Start("Fix B at start", "B", 20),
     ]
 
 

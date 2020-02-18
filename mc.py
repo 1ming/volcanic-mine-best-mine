@@ -1,4 +1,4 @@
-from vm import main
+from vm import main, get_rules
 from consts import VALVE_START_RANGE, VentDirection
 from vm_plots import plot_histogram
 import numpy as np
@@ -42,7 +42,7 @@ def monte_carlo(num_samples=NUM_SAMPLES):
 
     # get statistics of the valve start directions
     vent_dir_input_stats = get_vent_dir_stats(config_full_dataset)
-    print vent_dir_input_stats
+    # print vent_dir_input_stats
 
     # set up results (stability value at 5 min  mark)
     stability_dataset = []
@@ -60,10 +60,15 @@ def monte_carlo(num_samples=NUM_SAMPLES):
         # add resulting stability value to dataset
         stability_dataset.append(iteration_results["s"][-1])
 
+    # print out the rules being used.
+    print("Rules used:")
+    for rule in get_rules():
+        print(rule.name)
     # print some statistics of results
-    print("Stability dataset:")
+    print("")
+    print("Stability dataset over {} games:".format(num_samples))
     # print stability_dataset
-    print("Avg of stability dataset: {}".format(np.mean(stability_dataset)))
+    print("Avg stability at 5min reset: {}".format(np.mean(stability_dataset)))
     print("Standard deviation: {}".format(np.std(stability_dataset)))
     print("5th percentile: {}".format(np.percentile(stability_dataset, 5, interpolation='nearest')))
     print("25th percentile: {}".format(np.percentile(stability_dataset, 25, interpolation='nearest')))
