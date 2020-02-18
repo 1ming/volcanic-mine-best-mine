@@ -25,22 +25,13 @@ def validate_kwargs(input_config_dict):
     # warn user if input config was not valid
     return output_config_dict
 
-START_A = 50
-START_B = 40
-START_C = 50
-START_DIR_A = VentDirection.down
-START_DIR_B = VentDirection.down
-START_DIR_C = VentDirection.down
-# START_DIR_A = VentDirection.up
-# START_DIR_B = VentDirection.up
-# START_DIR_C = VentDirection.up
-
 def get_stability_change(a, b, c):
     return 25 - (abs(a - 50) + abs(b-50) + abs(c-50))/3
 
 def get_rules():
     return [
-    Rule_Distance("Hey Jase Safe Rule", "A", 25, 60),
+    Rule_Distance("Vorpal Safe Rule", "A", 15, 60),
+    # Rule_Distance("Hey Jase Safe Rule", "A", 25, 60),
     # Rule_Time("Discord Fix A", "A", 30, 240, True),
     # Rule_Start("Discord Fix A at start", "A", 40),
     Rule_Start("Discord Fix B at start", "B", 20),
@@ -89,13 +80,13 @@ def main(config_dict=None):
 
         # update vent values
         if i % TIME_VENT_UPDATE == 0:
-            print("Iteration {}: Updating vent values".format(i))
+            # print("Iteration {}: Updating vent values".format(i))
             for vent in data["vents"].values():
                 vent.update_val()
 
         # update stability value
         if i % TIME_STAB_UPDATE == 0:
-            print("Iteration {}: Updating stability value".format(i))
+            # print("Iteration {}: Updating stability value".format(i))
             data["stability_change"] = get_stability_change(*[x.val for x in data["vents"].values()])
             data["stability"] += data["stability_change"]
             # Don't go over cap
@@ -107,7 +98,7 @@ def main(config_dict=None):
         # Run player action rules.
         for rule in rules:
             if rule.check_condition(data):
-                print("Iteration {}: Doing rule action {}".format(i, rule.name))
+                # print("Iteration {}: Doing rule action {}".format(i, rule.name))
                 rule.do_action(data)
 
         # add dataset to results
