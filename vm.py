@@ -82,8 +82,8 @@ def main():
     vent_b = Vent("B", START_B, START_DIR_B, [vent_a,])
     vent_c = Vent("C", START_C, START_DIR_C, [vent_a, vent_b])
     data["vents"] = {
-    "A": vent_a, 
-    "B": vent_b, 
+    "A": vent_a,
+    "B": vent_b,
     "C": vent_c
     }
 
@@ -99,13 +99,13 @@ def main():
     # Initialize stability.
     data["stability"] = 50
     data["stability_change"] = 0
-    
+
     # Get rules
     rules = get_rules()
 
     for i in range(1,TOTAL_TIME):
         data["time"] = i;
-        
+
         # update vent values
         if i % TIME_VENT_UPDATE == 0:
             print("Iteration {}: Updating vent values".format(i))
@@ -122,7 +122,7 @@ def main():
                 data["stability"] = 100
             elif data["stability"] < 0:
                 data["stability"] = 0
-        
+
         # Run player action rules.
         for rule in rules:
             if rule.check_condition(data):
@@ -135,10 +135,15 @@ def main():
         results["t"].append(i)
         results["s"].append(data["stability"])
 
-    return results
+    # populate events dictionary
+    events = OrderedDict()
+    for rule in rules:
+        events.update(rule.dump())
+
+    return (results, events)
 
 if __name__ == "__main__":
-    results = main()
+    (results, events) = main()
     for (k, v) in results.iteritems():
         print("{}: {}".format(k, v))
         print
@@ -157,4 +162,4 @@ if __name__ == "__main__":
             fh.write("{}\n".format(",".join([str(a) for a in vals])))
 
     # vm_plots.plot_vm(results, plot_title="A=30down, B=40down, C=50down, nofix")
-    vm_plots.plot_vm(results, plot_title="A=50down, B=40down, C=50down, nofix", filename="mingtest.png")
+    vm_plots.plot_vm(results, events, plot_title="A=50down, B=40down, C=50down, nofix", filename="mingtest.png")

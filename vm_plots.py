@@ -1,28 +1,55 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.cm as mplcm
 
-def plot_vm(results, show=True, filename=None, plot_title=None):
+DEFAULT_COLOURS = ['b', 'g', 'r', 'c', 'm', 'y']
+EVENTS_LINE_WIDTH = 0.75
+PLOTS_LINE_WIDTH = 0.8
 
-    # initialize dataset
+def colour_cycler(colour_list = DEFAULT_COLOURS):
+    while True:
+        for colour in colour_list:
+            yield colour
+
+def plot_histogram():
+    pass
+
+def plot_vm(results, events, show=True, filename=None, plot_title=None):
+    # initialize colour cycler
+    cc = colour_cycler()
+
+    # initialize time series dataset
     t = results['t']
     s = results['s']
 
-    fig, axs = plt.subplots(2, 1)
+    fig, axs = plt.subplots(2,1,figsize=(10,6))
 
-    # plot the vents
+    # plot the vents timeseries
     for vent_name in ["A", "B", "C"]:
         vent_data = results[vent_name]
-        axs[0].plot(t, vent_data, label=vent_name)
-        # axs[0].plot(t, vent_data, marker='.', label=vent_name)  # if we want to change the marker type
-    # axs[0].axvline(48, ls="--", color='r', label="kdjfkdjfk")
-    # axs[0].axvline(100, ls="--", color='r', label="kdjfkdjfk")
+        axs[0].plot(t, vent_data, label=vent_name, lw=PLOTS_LINE_WIDTH, color=cc.next())
+
+    # add annotations for events (when rules were applied)
+    for (event_name, timestamps) in events.iteritems():
+        event_label = "{}\n({})".format(event_name, ", ".join([str(a) for a in timestamps]))
+        label_clr = cc.next()
+        for (index, timestamp) in enumerate(timestamps):
+            if index == 0:
+                # only create a label if it's the first event of this type
+                # otherwise it will create multiple labels in the legend for the same event
+                axs[0].axvline(timestamp, ls="--", linewidth=EVENTS_LINE_WIDTH, label=event_label, color=label_clr)
+            else:
+                axs[0].axvline(timestamp, ls="--", linewidth=EVENTS_LINE_WIDTH, color=label_clr)
+
+
     axs[0].legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('Vents')
     axs[0].grid(True)
 
-    # plot the stability
-    axs[1].plot(t, s)
+    # plot the stability time series
+    axs[1].plot(t, s, lw=PLOTS_LINE_WIDTH, color=cc.next())
     axs[1].set_xlabel('time')
     axs[1].set_ylabel('Stability')
     axs[1].grid(True)
