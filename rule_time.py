@@ -28,7 +28,8 @@ class Rule_Time(Rule):
         # Rule still being followed, check if stability is falling if we care.
         if self.only_falling_stability and data["stability_change"] >= 0:
             return False
-        return True
+        # Only fix if it needs fixing.
+        return not data["vents"][self.vent].check_correct_dir()
         
     def do_action(self, data):
         # If we aren't running to the vent, start running

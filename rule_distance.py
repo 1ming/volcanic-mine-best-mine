@@ -26,7 +26,10 @@ class Rule_Distance(Rule):
             return False
         # Check if the vent is far enough from 50.
         vent = data["vents"][self.vent]
-        return abs(vent.val - 50) > self.threshold
+        if abs(vent.val - 50) <= self.threshold:
+            return False
+        # Only fix if it needs fixing.
+        return not data["vents"][self.vent].check_correct_dir()
         
     def do_action(self, data):
         # If we aren't running to the vent, start running

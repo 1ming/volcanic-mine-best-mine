@@ -1,29 +1,22 @@
 from collections import namedtuple, OrderedDict
+from consts import VentDirection, TOTAL_TIME, TIME_VENT_UPDATE, TIME_STAB_UPDATE, VALVE_START_RANGE
 
 import vm_plots
 from rule_time import Rule_Time
 from rule_start import Rule_Start
 from rule_distance import Rule_Distance
+from vent import Vent
 
 # volcanic mine modelling
-Direction = namedtuple("Direction", "up down")(*[1, -1])
-
-# constants
-TOTAL_TIME = 300
-TIME_VENT_UPDATE = 6
-TIME_STAB_UPDATE = 15
-DEFAULT_VENT_UPDATE = 2
-SWEET_SPOT_RANGE = [41, 59]
-VALVE_START_RANGE = [30, 70]
 
 # change these into variables later
 DEFAULT_KWARGS = {
     "start_a": 50,
     "start_b": 40,
     "start_c": 30,
-    "start_dir_a": Direction.down,
-    "start_dir_b": Direction.down,
-    "start_dir_c": Direction.down,
+    "start_dir_a": VentDirection.down,
+    "start_dir_b": VentDirection.down,
+    "start_dir_c": VentDirection.down,
 }
 
 def validate_kwargs(input_config_dict):
@@ -35,48 +28,12 @@ def validate_kwargs(input_config_dict):
 START_A = 50
 START_B = 40
 START_C = 50
-START_DIR_A = Direction.down
-START_DIR_B = Direction.down
-START_DIR_C = Direction.down
-# START_DIR_A = Direction.up
-# START_DIR_B = Direction.up
-# START_DIR_C = Direction.up
-
-class Vent():
-    def __init__(self, name, start_val, direction, parents):
-        self.val = start_val
-        self.name = name
-        self.direction = direction
-        self.parents = parents
-
-    def update_val(self):
-        update_amount = DEFAULT_VENT_UPDATE
-        # Check if parents are in sweet spot.
-        for parent in self.parents:
-            if parent.check_in_ss():
-                update_amount -= 1
-        # Check own sweet spot.
-        if self.check_in_ss():
-            update_amount -= 1
-        # Don't go negative
-        if update_amount < 0:
-            update_amount = 0
-        self.val = self.val + update_amount * self.direction
-        # Don't go over cap
-        if self.val > 100:
-            self.val = 100
-        elif self.val < 0:
-            self.val = 0
-
-    # Change direction so that value goes towards 50
-    def fix(self):
-        if self.val < 50:
-            self.direction = Direction.up
-        elif self.val > 50:
-            self.direction = Direction.down
-
-    def check_in_ss(self):
-        return (SWEET_SPOT_RANGE[0] <= self.val <= SWEET_SPOT_RANGE[1])
+START_DIR_A = VentDirection.down
+START_DIR_B = VentDirection.down
+START_DIR_C = VentDirection.down
+# START_DIR_A = VentDirection.up
+# START_DIR_B = VentDirection.up
+# START_DIR_C = VentDirection.up
 
 def get_stability_change(a, b, c):
     return 25 - (abs(a - 50) + abs(b-50) + abs(c-50))/3
