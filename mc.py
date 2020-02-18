@@ -70,14 +70,14 @@ def monte_carlo(num_samples=NUM_SAMPLES):
         # add resulting stability value to dataset
         stability_dataset.append(iteration_results["s"][-1])
 
+        # store iteration results to all results so we can plot later if needed
+        all_iteration_results.append(iteration_results)
+        all_iteration_events.append(iteration_events)
+
     # print out the rules being used.
     print("Rules used:")
     for rule in get_rules():
         print(rule.name)
-
-    # store iteration results to all results so we can plot later if needed
-    all_iteration_results.append(iteration_results)
-    all_iteration_events.append(iteration_events)
 
     # print some statistics of results
     print("")
