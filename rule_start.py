@@ -7,15 +7,14 @@ class Rule_Start(Rule):
         # Approximately what time this is done by.
         self.time = time
         self.vent = vent
-    
+
     def check_condition(self, data):
         return self.time == data["time"]
-        
+
     def do_action(self, data):
         data["vents"][self.vent].fix()
-            
+
     def dump(self):
         return_val = {};
-        return_val[self.name] = self.time
+        return_val[self.name] = [self.time]
         return return_val
-        
