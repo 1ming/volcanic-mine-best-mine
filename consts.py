@@ -8,6 +8,9 @@ RUN_TIME = {
 # Enum for directions.
 VentDirection = namedtuple("VentDirection", "up down")(*[1, -1])
 
+# Rough guess on when 3rd rock is reached.
+THIRD_ROCK_TIME = 195
+
 
 DEFAULT_VENT_UPDATE = 2
 TOTAL_TIME = 300

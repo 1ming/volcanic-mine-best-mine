@@ -1,5 +1,5 @@
 from collections import namedtuple, OrderedDict
-from consts import VentDirection, TOTAL_TIME, TIME_VENT_UPDATE, TIME_STAB_UPDATE, VALVE_START_RANGE
+from consts import VentDirection, TOTAL_TIME, TIME_VENT_UPDATE, TIME_STAB_UPDATE, VALVE_START_RANGE, THIRD_ROCK_TIME
 
 import vm_plots
 from rule_time import Rule_Time
@@ -31,9 +31,11 @@ def get_stability_change(a, b, c):
 def get_rules():
     return [
     # Rule_Distance("Hey Jase Fix When 25 Off", "A", 25, 41),
-    # Rule_Distance("Vorpal Fix When 15 Off", "A", 15, 41),
-    # Rule_Time("Discord Fix A", "A", 30, 240, True),
-    Rule_Time("Fix A at 8 min mark", "A", 120, 121, False),
+    Rule_Distance("Fix A at 3rd rock when 15 off", "A", 15, THIRD_ROCK_TIME, THIRD_ROCK_TIME + 1),
+    # Rule_Time("Discord Fix A", "A", 41, 240, True),
+    # Rule_Time("Fix A at 8 min mark", "A", 120, 121, False),
+    # Rule_Time("Fix A at 6:45 min mark (3rd rock)", "A", THIRD_ROCK_TIME, THIRD_ROCK_TIME + 1, False),
+    # Rule_Time("If stab drops before 3rd rock fix A", "A", 41, 194, True),
     Rule_Start("Fix A at start", "A", 40),
     Rule_Start("Fix B at start", "B", 20),
     ]

@@ -44,7 +44,7 @@ class Rule_Time(Rule):
             
     def dump(self):
         return_val = {};
-        return_val[self.name + "_start"] = self.start_timestamps
-        return_val[self.name + "_end"] = self.end_timestamps
+        return_val[self.name + " -> start running"] = self.start_timestamps
+        return_val[self.name + " -> fixed vent"] = self.end_timestamps
         return return_val
         

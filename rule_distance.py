@@ -2,11 +2,12 @@ from rules import Rule
 from consts import RUN_TIME
 # Rule to fix a vent when its value is a certain distance away from 50
 class Rule_Distance(Rule):
-    def __init__(self, name, vent, threshold, start_time):
+    def __init__(self, name, vent, threshold, start_time = 41, end_time = 300):
         super(Rule_Distance, self).__init__(name)
         # Minimum time for the rule to take effect
-        # Mostly needed so that the rule isn't triggered before the initial fix is done.
+        # When to start/stop applying the rule
         self.start_time = start_time
+        self.end_time = end_time
         
         self.threshold = threshold
         
@@ -22,7 +23,7 @@ class Rule_Distance(Rule):
             # Check if we've finally reached the vent.
             return data["time"] >= self.start_doing + RUN_TIME[self.vent]
         # Not running to a vent, check if the time is within bounds.
-        if data["time"] < self.start_time:
+        if self.start_time > data["time"] or data["time"] < self.end_time:
             return False
         # Check if the vent is far enough from 50.
         vent = data["vents"][self.vent]
@@ -44,7 +45,7 @@ class Rule_Distance(Rule):
             
     def dump(self):
         return_val = {};
-        return_val[self.name + "_start"] = self.start_timestamps
-        return_val[self.name + "_end"] = self.end_timestamps
+        return_val[self.name + " -> start running"] = self.start_timestamps
+        return_val[self.name + " -> fixed vent"] = self.end_timestamps
         return return_val
         
